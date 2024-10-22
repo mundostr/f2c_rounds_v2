@@ -1,0 +1,33 @@
+.form-control {
+    width: 260px;
+}
+
+.form-control-number {
+    width: 64px;
+}
+
+.form-control-time {
+    width: 96px;
+}
+
+.form-control-text {
+    width: 100%;
+}
+
+.bg-group {
+    padding: 0.5em;
+    padding-top: 1em;
+    border-radius: 0.5em;
+    background-color: #ccc;
+}
+
+.page-break {
+    page-break-before: always;
+}
+
+
+@media screen only and (max-width: 640px) {
+    .form-control {
+        width: 100%;
+    }   
+}
