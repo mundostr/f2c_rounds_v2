@@ -309,6 +309,7 @@ const toggleExportBtn = () => {
 
 // Main
 const TEAMS_PER_RACE = 3;
+let deferredPrompt;
 let htmlContent = '';
 let rounds = [];
 const teams = [];
@@ -319,6 +320,7 @@ const contestForm = document.getElementById('contest-form');
 const teamsList = document.getElementById('teams-List');
 const bntDraw = document.getElementById('btn-draw');
 const bntExport = document.getElementById('btn-export');
+const installButton = document.getElementById('install-button');
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
@@ -329,6 +331,27 @@ if ('serviceWorker' in navigator) {
         });
     });
 }
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installButton.style.display = 'block';
+    
+    installButton.addEventListener('click', () => {
+        installButton.style.display = 'none';
+        deferredPrompt.prompt();
+        
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Instalación aceptada');
+            } else {
+                console.log('Instalación cancelada');
+            }
+            
+            deferredPrompt = null;
+        });
+    });
+});
 
 teamForm.addEventListener('submit', async (event) => {
     event.preventDefault();
