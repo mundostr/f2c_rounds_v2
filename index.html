@@ -16,12 +16,19 @@
         <div class="container-fluid p-5">
             <div class="row">
                 <button id="install-button" class="btn btn-success" style="width: 100%; display: none;">Instalar</button>
+            </div>
+
+            <div class="row mt-4">
                 <h1><b>F2C Gestión de rondas</b></h1>
             </div>
 
             <!-- Equipos -->
             <div class="row mt-4 bg-group">
-                <h2><b><span id="teams-title">Equipos</span></b> <button class="btn btn-success" onclick="resetCollection('f2c_teams')">Limpiar</button></h2>
+                <h2><b><span id="teams-title">Equipos</span></b>
+                    <button class="btn btn-success" onclick="resetCollection('f2c_teams')">Limpiar</button>
+                    |
+                    <button class="btn btn-success" id="showToastBtn" onclick="showImportDialog('jsonToast')">Importar</button>
+                </h2>
                 
                 <form id="team-form" class="row gy-2 gx-3 align-items-center mb-4">
                     <div class="col-auto">
@@ -199,6 +206,19 @@
                 </div>
                 
                 <div class="toast-body" id="message-body"></div>
+            </div>
+        </div>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="jsonToast" class="toast bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Importar equipos</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <textarea id="jsonTextarea" rows="5" class="form-control" placeholder="Pegar JSON"></textarea>
+                    <button class="btn btn-secondary mt-2" id="saveButton">Importar</button>
+                </div>
             </div>
         </div>
     </body>

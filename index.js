@@ -1,5 +1,5 @@
 import { roundsInfo } from './config.js';
-import { toast, showMessage, confirm, resetCollection, shuffleArray, timeToMinutes, calculateTime, export2PDF } from './utils.js';
+import { toast, showMessage, showImportDialog, confirm, resetCollection, shuffleArray, timeToMinutes, calculateTime, export2PDF } from './utils.js';
 
 const saveTeams = async () => {
     if (localforage) {
@@ -321,6 +321,7 @@ const teamsList = document.getElementById('teams-List');
 const bntDraw = document.getElementById('btn-draw');
 const bntExport = document.getElementById('btn-export');
 const installButton = document.getElementById('install-button');
+const saveButton = document.getElementById('saveButton');
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
@@ -371,6 +372,17 @@ contestForm.addEventListener('submit', async (event) => {
     showMessage('Datos de concurso actualizados');
 })
 
+saveButton.addEventListener('click', async () => {
+    try {
+        const jsonText = document.getElementById('jsonTextarea').value;
+        const jsonData = JSON.parse(jsonText);
+        await localforage.setItem('f2c_teams', jsonData);
+        getTeams();
+    } catch (err) {
+        console.error('Error al importar:', err.message);
+    }
+})
+
 const drawObserver = new MutationObserver(() => {
     toggleDrawBtn();
 });
@@ -385,6 +397,7 @@ window.confirm = confirm;
 window.drawRounds = drawRounds;
 window.export2PDF = export2PDF;
 window.resetCollection = resetCollection;
+window.showImportDialog = showImportDialog;
 
 getTeams();
 getContest();

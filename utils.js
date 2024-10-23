@@ -11,6 +11,12 @@ export const showMessage = (msg, hide = true) => {
     hide ? toastAutohide.show(): toast.show();
 }
 
+export const showImportDialog = (dialog) => {
+    const toastElement = document.getElementById(dialog);
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+}
+
 export const confirm = async (title, routine) => {
     showMessage(`
         <p>${title}</p>
