@@ -308,6 +308,7 @@ const toggleExportBtn = () => {
 
 
 // Main
+const INSTALLABLE = false;
 const TEAMS_PER_RACE = 3;
 let deferredPrompt;
 let htmlContent = '';
@@ -323,7 +324,7 @@ const bntExport = document.getElementById('btn-export');
 const installButton = document.getElementById('install-button');
 const saveButton = document.getElementById('saveButton');
 
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && INSTALLABLE) {
     window.addEventListener('load', function() {
         navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
             console.log('Service Worker registered with scope:', registration.scope);
@@ -398,6 +399,7 @@ window.drawRounds = drawRounds;
 window.export2PDF = export2PDF;
 window.resetCollection = resetCollection;
 window.showImportDialog = showImportDialog;
+window.removeTeam = removeTeam;
 
 getTeams();
 getContest();
