@@ -131,6 +131,7 @@ const updateContest = async (event) => {
 const drawRounds = async () => {
     toast.hide();
     teams.forEach(team => team.maxcounter = 0 );
+    let previousRaces = new Set();
     
     const processDraw = (roundTeams) => {
         const races = [];
@@ -149,9 +150,17 @@ const drawRounds = async () => {
             return teams[index].maxcounter < contest.maxrepeatsinlast;
         });
     };
+
+    const raceToString = (race) => race.map(team => team.id).sort().join('-');
     
     const validateRound = (racesArr) => {
         const lastRace = racesArr.at(-1);
+
+        for (const race of racesArr) {
+            const raceKey = raceToString(race);
+            if (previousRaces.has(raceKey)) return false;
+        }
+
         if (lastRace.length < TEAMS_PER_RACE && !isValidIncompleteRace(lastRace)) return false;
         return true;
     };
@@ -169,6 +178,11 @@ const drawRounds = async () => {
                 lastRace.forEach(team => {
                     const index = teams.findIndex(item => item.id === team.id);
                     teams[index].maxcounter++;
+                });
+
+                round.forEach(race => {
+                    const raceKey = raceToString(race);
+                    previousRaces.add(raceKey);
                 });
             }
         }
