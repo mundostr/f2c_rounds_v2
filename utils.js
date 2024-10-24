@@ -2,6 +2,8 @@ import { pdfOutputFile, roundsInfo } from './config.js';
 
 export const toast = new bootstrap.Toast(message, { autohide: false });
 export const toastAutohide = new bootstrap.Toast(message, { autohide: true, delay: 3000 });
+const toastElement = document.getElementById('jsonToast');
+export const toastImport = new bootstrap.Toast(toastElement);
 
 
 export const showMessage = (msg, hide = true) => {
@@ -11,10 +13,15 @@ export const showMessage = (msg, hide = true) => {
     hide ? toastAutohide.show(): toast.show();
 }
 
-export const showImportDialog = (dialog) => {
-    const toastElement = document.getElementById(dialog);
+export const showImportDialog = () => {
+    /* const toastElement = document.getElementById(dialog);
     const toast = new bootstrap.Toast(toastElement);
-    toast.show();
+    toast.show(); */
+    toastImport.show();
+}
+
+export const hideImportDialog = () => {
+    toastImport.hide();
 }
 
 export const confirm = async (title, routine) => {

@@ -25,6 +25,10 @@
     page-break-before: always;
 }
 
+.draggable {
+    cursor: move;
+}
+
 
 @media screen only and (max-width: 640px) {
     .form-control {

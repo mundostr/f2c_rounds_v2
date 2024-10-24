@@ -1,5 +1,5 @@
 import { roundsInfo } from './config.js';
-import { toast, showMessage, showImportDialog, confirm, resetCollection, shuffleArray, timeToMinutes, calculateTime, export2PDF } from './utils.js';
+import { toast, showMessage, showImportDialog, hideImportDialog, confirm, resetCollection, shuffleArray, timeToMinutes, calculateTime, export2PDF } from './utils.js';
 
 const saveTeams = async () => {
     if (localforage) {
@@ -271,15 +271,15 @@ const showRounds = () => {
             htmlContent += `<div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Serie ${serieCounter} (${currentTime} hs)</h5>
-                    <ul class="list-group">`;
+                    <ul id="list${serieCounter}" class="list-group" ondrop="drop(event)" ondragover="allowDrop(event)">`;
             
             for (let x = 0; x < 3; x++) {
                 const assistants = x === 0 ? 'A': x === 1 ? 'B': 'C';
                
                 if (heat[x] !== undefined) {
                     htmlContent += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div class="fw-bold team-content">${heat[x].id} ${heat[x].country} ${heat[x].pilot.split(',')[0].trim()}/${heat[x].pitman.split(',')[0].trim()}<br>(crono ${assistants})</div>
-                        <span class="badge ${shirts[x] === 'ROJ' ? 'bg-danger': shirts[x] === 'VDE' ? 'bg-success': 'bg-primary'} rounded-pill">_</span>
+                        <div class="fw-bold team-content"><span class="draggable" draggable="true" id="heat${serieCounter}${x}" ondragstart="drag(event)">${heat[x].id} ${heat[x].country} ${heat[x].pilot.split(',')[0].trim()}/${heat[x].pitman.split(',')[0].trim()}</span><br>(crono ${assistants})</div>
+                        <span class="badge ${shirts[x] === 'ROJ' ? 'bg-danger': shirts[x] === 'VDE' ? 'bg-success': 'bg-primary'} rounded-pill" onclick="changeBadgeColor(this)" style="cursor: pointer;">_</span>
                     </li>`;
                 }
             }
@@ -306,13 +306,52 @@ const toggleExportBtn = () => {
     bntExport.disabled = roundsInfo.innerHTML.trim() === '';
 }
 
+const allowDrop = (event) => {
+    event.preventDefault();
+}
+
+const drag = (event) => {
+    draggedItem = event.target;
+    event.dataTransfer.setData("text", event.target.innerText);
+}
+
+const drop = (event) => {
+    event.preventDefault();
+    
+    const droppedSpan = event.target;
+    
+    if (droppedSpan.tagName.toLowerCase() === 'span') {
+        const draggedText = draggedItem.innerText;
+        const droppedText = droppedSpan.innerText;
+        
+        draggedItem.innerText = droppedText;
+        droppedSpan.innerText = draggedText;
+    }
+}
+
+const changeBadgeColor = (item) => {
+    if (item.classList.contains('bg-danger')) {
+        item.classList.remove('bg-danger');
+        item.classList.add('bg-success');
+    } else if (item.classList.contains('bg-success')) {
+        item.classList.remove('bg-success');
+        item.classList.add('bg-primary');
+    } else if (item.classList.contains('bg-primary')) {
+        item.classList.remove('bg-primary');
+        item.classList.add('bg-danger');
+    }
+}
+
 
 // Main
 const INSTALLABLE = false;
 const TEAMS_PER_RACE = 3;
+
 let deferredPrompt;
 let htmlContent = '';
 let rounds = [];
+let draggedItem;
+
 const teams = [];
 const contest = {};
 const shirts = ['ROJ', 'VDE', 'AZU'];
@@ -377,8 +416,11 @@ saveButton.addEventListener('click', async () => {
     try {
         const jsonText = document.getElementById('jsonTextarea').value;
         const jsonData = JSON.parse(jsonText);
-        await localforage.setItem('f2c_teams', jsonData);
-        getTeams();
+        await localforage.setItem('f2c_teams', jsonData.teams);
+        await localforage.setItem('f2c_contest', jsonData.contest);
+        await getTeams();
+        await getContest();
+        hideImportDialog();
     } catch (err) {
         console.error('Error al importar:', err.message);
     }
@@ -400,6 +442,10 @@ window.export2PDF = export2PDF;
 window.resetCollection = resetCollection;
 window.showImportDialog = showImportDialog;
 window.removeTeam = removeTeam;
+window.allowDrop = allowDrop;
+window.drag = drag;
+window.drop = drop;
+window.changeBadgeColor = changeBadgeColor;
 
 getTeams();
 getContest();
