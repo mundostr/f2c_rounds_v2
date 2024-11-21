@@ -387,26 +387,43 @@ if ('serviceWorker' in navigator && INSTALLABLE) {
     });
 }
 
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    installButton.style.display = 'block';
-    
-    installButton.addEventListener('click', () => {
-        installButton.style.display = 'none';
-        deferredPrompt.prompt();
-        
-        deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('Instalación aceptada');
-            } else {
-                console.log('Instalación cancelada');
-            }
-            
-            deferredPrompt = null;
+const checkIfInstalled = () => {
+    const isIOSInstalled = window.navigator.standalone; // iOS
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches; // android, desktop
+
+    if (isIOSInstalled || isStandalone) {
+        if (installButton) installButton.style.display = 'none';
+    } else {
+        if (installButton) installButton.style.display = 'block';
+    }
+};
+
+window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+
+    checkIfInstalled();
+
+    const installButton = document.getElementById('install-button');
+    if (installButton) {
+        installButton.style.display = 'block';
+
+        installButton.addEventListener('click', () => {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choice) => {
+                if (choice.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+                deferredPrompt = null;
+                installButton.style.display = 'none'; // Hide after installation
+            });
         });
-    });
+    }
 });
+
+window.addEventListener("load", checkIfInstalled);
 
 teamForm.addEventListener('submit', async (event) => {
     event.preventDefault();
