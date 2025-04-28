@@ -358,7 +358,7 @@ const changeBadgeColor = (item) => {
 
 
 // Main
-const INSTALLABLE = false;
+const INSTALLABLE = true;
 const TEAMS_PER_RACE = 3;
 
 let deferredPrompt;
@@ -404,7 +404,6 @@ window.addEventListener('beforeinstallprompt', (event) => {
 
     checkIfInstalled();
 
-    const installButton = document.getElementById('install-button');
     if (installButton) {
         installButton.style.display = 'block';
 
